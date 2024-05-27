@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="road">
+    <img
+      [ngClass]="position"
+      src="../../../assets/img/bus-image.jpg"
+      alt="Bus"
+      class="bus"
+    />
+  </div>
+  <button *ngIf="!simulationRunning" (click)="moveBus()">
+    Iniciar Simulación
+  </button>
+  <button *ngIf="simulationRunning" (click)="stopSimulation()">
+    Detener Simulación
+  </button>
+</div>
+
+<div class="card-container">
+  <div class="card" *ngFor="let stop of stops">
+    <h2>{{ stop.name }}</h2>
+    <p>
+      Cantidad de personas que llegan a la estación: {{ stop.peopleArriving }}
+    </p>
+    <p>Cantidad de personas en espera: {{ stop.peopleWaiting }}</p>
+    <p>Cantidad de personas que entran en el bus: {{ stop.peopleBoarding }}</p>
+    <p>Hora de salida: {{ stop.departureTime }}</p>
+    <p>Hora de llegada: {{ stop.arrivalTime }}</p>
+    <p>
+      Cantidad de personas que se desmontan del bus:
+      {{ stop.peopleDisembarking }}
+    </p>
+    <p>Personas que se suben al bus: {{ stop.peopleBoarding }}</p>
+  </div>
+</div>
+
+<!-- Sección de estadísticas finales -->
+<div *ngIf="!simulationRunning" class="card final-card">
+  <div class="card-body">
+    <h2 class="card-title">Estadísticas Finales</h2>
+    <p class="card-text">
+      Cantidad de personas transportadas: {{ totalPeopleTransported }}
+    </p>
+    <p class="card-text">
+      Cantidad de personas que se quedaron en el bus: {{ peopleLeftOnBus }}
+    </p>
+    <p class="card-text">
+      Total de personas transportadas por parada de origen:
+    </p>
+    <ul class="list-unstyled">
+      <li
+        *ngFor="let transported of totalPeopleTransportedByStop; let i = index"
+      >
+        Parada {{ i + 1 }}: {{ transported }}
+      </li>
+    </ul>
+    <p class="card-text">Total de personas que se quedaron sin montarse:</p>
+    <ul class="list-unstyled">
+      <li *ngFor="let left of totalPeopleLeftAtStop; let i = index">
+        Parada {{ i + 1 }}: {{ left }}
+      </li>
+    </ul>
+  </div>
+</div>
