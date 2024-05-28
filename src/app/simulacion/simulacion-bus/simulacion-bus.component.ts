@@ -12,7 +12,7 @@ export class BusAnimationComponent {
   position: string = 'left';
   stops = [
     {
-      name: 'Left',
+      name: 'Stop 1',
       peopleArriving: 0,
       peopleWaiting: 0,
       peopleBoarding: 0,
@@ -21,7 +21,7 @@ export class BusAnimationComponent {
       peopleDisembarking: 0,
     },
     {
-      name: 'Center',
+      name: 'Stop 2',
       peopleArriving: 0,
       peopleWaiting: 0,
       peopleBoarding: 0,
@@ -30,7 +30,7 @@ export class BusAnimationComponent {
       peopleDisembarking: 0,
     },
     {
-      name: 'Right',
+      name: 'Stop 3',
       peopleArriving: 0,
       peopleWaiting: 0,
       peopleBoarding: 0,
@@ -45,30 +45,30 @@ export class BusAnimationComponent {
   peopleLeftOnBus: number = 0;
   totalPeopleTransportedByStop: number[] = [0, 0, 0];
   totalPeopleLeftAtStop: number[] = [0, 0, 0];
+  currentPassengersOnBus: number = 0;
 
   moveBus() {
     this.simulationRunning = true;
-    this.animateBus(5); // Realizar 5 ciclos completos
+    this.animateBus(10);
   }
 
   stopSimulation() {
     this.simulationRunning = false;
-    this.calculateStatistics();
   }
 
   animateBus(cycles: number) {
-    let count = 0;
-    const totalMoves = cycles * 4; // Cada ciclo consta de 4 movimientos
+    let counter = 0;
+    const totalMovements = cycles * 4; // El ciclo se repite 4 veces
     const move = () => {
-      if (count < totalMoves && this.simulationRunning) {
+      if (counter < totalMovements && this.simulationRunning) {
         const currentTime = new Date().toLocaleTimeString();
-        let currentStopIndex = -1; // Inicializar con un valor que no sea válido
+        let currentStopIndex = -1;
 
         if (this.position === 'left') {
           currentStopIndex = 0;
           this.position = 'center';
         } else if (this.position === 'center') {
-          if (count % 4 === 1) {
+          if (counter % 4 === 1) {
             this.position = 'right';
             currentStopIndex = 1;
           } else {
@@ -82,47 +82,29 @@ export class BusAnimationComponent {
 
         if (currentStopIndex !== -1) {
           const stop = this.stops[currentStopIndex];
-          stop.peopleArriving += Math.floor(Math.random() * 10) + 1;
-          stop.peopleWaiting = Math.floor(Math.random() * 20) + 1;
+          stop.peopleArriving += Math.floor(Math.random() * 20) + 1; //Se calcula automÃ¡ticamente el nÃomero de personas que llegan a la parada
+          stop.peopleWaiting = Math.floor(Math.random() * 10) + 1; //Se calcula automÃ¡ticamente el nÃomero de personas que esperan en la parada
           stop.peopleBoarding = Math.floor(Math.random() * stop.peopleWaiting);
           stop.departureTime = currentTime;
           stop.arrivalTime = currentTime;
           stop.peopleDisembarking = Math.floor(
             Math.random() * stop.peopleBoarding
-          );
+          ); //Personas que suben al bus con numero aleatorio basando en la cantidad de personas que esperan en la parada
 
-          // Actualizar estadísticas
+          //Actualizamos totales
           this.totalPeopleTransported += stop.peopleDisembarking;
-          this.peopleLeftOnBus += stop.peopleBoarding;
+          this.peopleLeftOnBus += stop.peopleBoarding - stop.peopleDisembarking;
           this.totalPeopleTransportedByStop[currentStopIndex] +=
             stop.peopleDisembarking;
           this.totalPeopleLeftAtStop[currentStopIndex] += stop.peopleBoarding;
+          this.currentPassengersOnBus +=
+            stop.peopleBoarding - stop.peopleDisembarking;
         }
 
-        count++;
-        setTimeout(move, 1000); // Espera 1 segundo antes de cambiar la posición de nuevo
+        counter++;
+        setTimeout(move, 1000); // Wait 1 second before changing the position again
       }
     };
     move();
-  }
-
-  calculateStatistics() {
-    // Calcula las estadísticas finales
-    console.log(
-      'Cantidad de personas transportadas:',
-      this.totalPeopleTransported
-    );
-    console.log(
-      'Cantidad de personas que se quedaron en el bus:',
-      this.peopleLeftOnBus
-    );
-    console.log(
-      'Total de personas transportadas por parada de origen:',
-      this.totalPeopleTransportedByStop
-    );
-    console.log(
-      'Total de personas que se quedaron sin montarse:',
-      this.totalPeopleLeftAtStop
-    );
   }
 }
